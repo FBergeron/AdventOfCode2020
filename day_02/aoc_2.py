@@ -8,6 +8,8 @@ with open(input_data_filename, 'r') as input_file:
         freq_policy, char_policy, password = line.strip().split()
         entries.append((freq_policy, char_policy, password))
 
+
+# Part 1
 valid_password_count = 0
 for entry in entries:
     freq_policy, char_policy, password = entry
@@ -22,4 +24,18 @@ for entry in entries:
 print(valid_password_count)
 
 
+# Part 2
+valid_password_count = 0
+for entry in entries:
+    pos_policy, char_policy, password = entry
+    positions = [int(pos) for pos in pos_policy.split('-')]
+    correct_char_count = 0
+    char = char_policy[0]
+    for index, c in enumerate(password):
+        if c == char and (index+1) in positions:
+            correct_char_count += 1
+    is_valid = correct_char_count == 1 
+    if is_valid:
+        valid_password_count += 1
 
+print(valid_password_count)
