@@ -17,8 +17,6 @@ last_index = {}
 orig_length = len(numbers)
 i = 0
 while i < 30000000:
-# while i < 2020:
-# while i < 12:
     if i % 100000 == 0:
         print(i)
     if i < orig_length:
@@ -31,7 +29,6 @@ while i < 30000000:
             next_number = i - index - 1
             numbers.append(next_number)
             last_index[n] = i - 1
-        # elif n not in numbers[:-1]:
         else:
             numbers.append(0)
             last_index[n] = i -1
