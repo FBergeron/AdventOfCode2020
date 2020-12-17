@@ -1,8 +1,13 @@
 import sys
 
-# input_data_filename = "initial_state_short.txt"
-input_data_filename = "initial_state.txt"
+input_data_filename = "initial_state_short.txt"
+# input_data_filename = "initial_state.txt"
 
+
+def display_hypercube(hypercube):
+    for w in range(len(hypercube)):
+        print("w={w}, ", end='')
+        display_cube(hypercube[w])
 
 def display_cube(cube):
     for z in range(len(cube)):
@@ -31,13 +36,14 @@ def count_surrounding_active_neighbors(x, y, z, cube):
     return count
 
 
-def count_active_units(cube):
+def count_active_units(hypercube):
     count = 0
-    for zz in range(len(cube)):
-        for yy in range(len(cube[zz])):
-            for xx in range(len(cube[zz][yy])):
-                if cube[zz][yy][xx] == '#':
-                    count += 1
+    for ww in range(len(hypercube)):
+        for zz in range(len(hypercube[ww])):
+            for yy in range(len(hypercube[ww][zz])):
+                for xx in range(len(hypercube[ww][zz][yy])):
+                    if hypercube[ww][zz][yy][xx] == '#':
+                        count += 1
     return count
 
 
@@ -72,6 +78,7 @@ def expand_cube(cube):
 
     return new_cube
 
+
 def make_copy(cube):
     new_cube = []
     for z in range(len(cube)):
@@ -84,7 +91,7 @@ def make_copy(cube):
         new_cube.append(layer)
     return new_cube
 
-
+hypercube = []
 cube = []
 layer = []
 with open(input_data_filename, 'r') as input_file:
@@ -92,29 +99,30 @@ with open(input_data_filename, 'r') as input_file:
         line = line.strip()
         layer.append(list(line))
 cube.append(layer)
+hypercube.append(cube)
 
 print(f"Before any cycles:")
-display_cube(cube)
-active_count = count_active_units(cube)
+display_hypercube(hypercube)
+active_count = count_active_units(hypercube)
 print(f"active_count={active_count}")
 
 cycle = 0
 while cycle < 6:
    
-    cube = expand_cube(cube)
-    new_cube = make_copy(cube)
+    # hypercube = expand_hypercube(hypercube)
+    # new_cube = make_copy(cube)
 
-    for z in range(len(cube)):
-        for y in range(len(cube[z])):
-            for x in range(len(cube[z][y])):
-                c = count_surrounding_active_neighbors(x, y, z, cube)
-                # print(f"{cube[z][y][x]} x={x} y={y} z={z} c={c}")
-                if cube[z][y][x] == '#':
-                    if c not in [2, 3]:
-                        new_cube[z][y][x] = "."
-                else:
-                    if c == 3:
-                        new_cube[z][y][x] = "#"
+    # for z in range(len(cube)):
+    #     for y in range(len(cube[z])):
+    #         for x in range(len(cube[z][y])):
+    #             c = count_surrounding_active_neighbors(x, y, z, cube)
+    #             # print(f"{cube[z][y][x]} x={x} y={y} z={z} c={c}")
+    #             if cube[z][y][x] == '#':
+    #                 if c not in [2, 3]:
+    #                     new_cube[z][y][x] = "."
+    #             else:
+    #                 if c == 3:
+    #                     new_cube[z][y][x] = "#"
 
     cycle += 1
 
