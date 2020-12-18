@@ -1,12 +1,12 @@
 import sys
 
-input_data_filename = "initial_state_short.txt"
-# input_data_filename = "initial_state.txt"
+# input_data_filename = "initial_state_short.txt"
+input_data_filename = "initial_state.txt"
 
 
 def display_hypercube(hypercube):
     for w in range(len(hypercube)):
-        print("w={w}, ", end='')
+        print(f"w={w}, ", end='')
         display_cube(hypercube[w])
 
 def display_cube(cube):
@@ -19,20 +19,21 @@ def display_cube(cube):
         print("")
 
 
-def count_surrounding_active_neighbors(x, y, z, cube):
-    # print(f"count_surrounding_active_neighbors x={x} y={y} z={z} len(cube)={len(cube)}")
+def count_surrounding_active_neighbors(x, y, z, w, hypercube):
+    # print(f"count_surrounding_active_neighbors x={x} y={y} z={z} len(hypercube)={len(hypercube)}")
     count = 0
-    for zz in range(max(z - 1, 0), min(z + 2, len(cube))):
-        # print(f"zz={zz}")
-        for yy in range(max(y - 1, 0), min(y + 2, len(cube[zz]))):
-            # print(f"yy={yy}")
-            for xx in range(max(x - 1, 0), min(x + 2, len(cube[zz][yy]))):
-                # print(f"xx={xx}")
-                if xx == x and yy == y and zz == z:
-                    continue
-                else:
-                    if cube[zz][yy][xx] == '#':
-                        count += 1
+    for ww in range(max(w -1, 0), min(w + 2, len(hypercube))):
+        for zz in range(max(z - 1, 0), min(z + 2, len(hypercube[ww]))):
+            # print(f"zz={zz}")
+            for yy in range(max(y - 1, 0), min(y + 2, len(hypercube[ww][zz]))):
+                # print(f"yy={yy}")
+                for xx in range(max(x - 1, 0), min(x + 2, len(hypercube[ww][zz][yy]))):
+                    # print(f"xx={xx}")
+                    if ww == w and xx == x and yy == y and zz == z:
+                        continue
+                    else:
+                        if hypercube[ww][zz][yy][xx] == '#':
+                            count += 1
     return count
 
 
@@ -47,49 +48,67 @@ def count_active_units(hypercube):
     return count
 
 
-def expand_cube(cube):
-    z_layer_count = len(cube)
-    y_layer_count = len(cube[0])
-    x_layer_count = len(cube[0][0])
+def expand_hypercube(hypercube):
+    w_dim_count = len(hypercube)
+    z_dim_count = len(hypercube[0])
+    y_dim_count = len(hypercube[0][0])
+    x_dim_count = len(hypercube[0][0][0])
 
     def build_empty_larger_layout():
         layer = []
-        for y in range(y_layer_count + 2):
-            layer.append(list("." * (x_layer_count + 2)))
+        for y in range(y_dim_count + 2):
+            layer.append(list("." * (x_dim_count + 2)))
         return layer
 
-    new_cube = []
-    new_cube.append(build_empty_larger_layout())
-    for z in range(z_layer_count):
-        layer = []
-        layer.append(list("." * (x_layer_count + 2)))
-        for y in range(y_layer_count):
-            line = []
-            line.append(".")
-            for x in range(x_layer_count):
-                line.append(cube[z][y][x])
-            line.append(".")
-            layer.append(line)
+    def build_empty_larger_cube():
+        cube = []
+        for z in range(z_dim_count + 2):
+            cube.append(build_empty_larger_layout())
+        return cube
+            
+    new_hypercube = []
+    new_hypercube.append(build_empty_larger_cube())
 
-        layer.append(list("." * (x_layer_count + 2)))
+    for w in range(w_dim_count):
+        cube = []
+        cube.append(build_empty_larger_layout())
 
-        new_cube.append(layer)
-    new_cube.append(build_empty_larger_layout())
+        for z in range(z_dim_count):
+            layer = []
+            layer.append(list("." * (x_dim_count + 2)))
+            for y in range(y_dim_count):
+                line = []
+                line.append(".")
+                for x in range(x_dim_count):
+                    line.append(hypercube[w][z][y][x])
+                line.append(".")
+                layer.append(line)
+            layer.append(list("." * (x_dim_count + 2)))
+            cube.append(layer)
 
-    return new_cube
+        cube.append(build_empty_larger_layout())
+        new_hypercube.append(cube)
+
+    new_hypercube.append(build_empty_larger_cube())
+    
+    return new_hypercube
 
 
-def make_copy(cube):
-    new_cube = []
-    for z in range(len(cube)):
-        layer = []
-        for y in range(len(cube[z])):
-            line = []
-            for x in range(len(cube[z][y])):
-                line.append(cube[z][y][x])
-            layer.append(line)
-        new_cube.append(layer)
-    return new_cube
+def make_copy(hypercube):
+    new_hypercube = []
+    for w in range(len(hypercube)):
+        cube = []
+        for z in range(len(hypercube[w])):
+            layer = []
+            for y in range(len(hypercube[w][z])):
+                line = []
+                for x in range(len(hypercube[w][z][y])):
+                    line.append(hypercube[w][z][y][x])
+                layer.append(line)
+            cube.append(layer)
+        new_hypercube.append(cube)
+    return new_hypercube
+
 
 hypercube = []
 cube = []
@@ -109,27 +128,30 @@ print(f"active_count={active_count}")
 cycle = 0
 while cycle < 6:
    
-    # hypercube = expand_hypercube(hypercube)
-    # new_cube = make_copy(cube)
+    hypercube = expand_hypercube(hypercube)
+    # display_hypercube(hypercube)
+    new_hypercube = make_copy(hypercube)
+    # display_hypercube(new_hypercube)
 
-    # for z in range(len(cube)):
-    #     for y in range(len(cube[z])):
-    #         for x in range(len(cube[z][y])):
-    #             c = count_surrounding_active_neighbors(x, y, z, cube)
-    #             # print(f"{cube[z][y][x]} x={x} y={y} z={z} c={c}")
-    #             if cube[z][y][x] == '#':
-    #                 if c not in [2, 3]:
-    #                     new_cube[z][y][x] = "."
-    #             else:
-    #                 if c == 3:
-    #                     new_cube[z][y][x] = "#"
+    for w in range(len(hypercube)):
+        for z in range(len(hypercube[w])):
+            for y in range(len(hypercube[w][z])):
+                for x in range(len(hypercube[w][z][y])):
+                    c = count_surrounding_active_neighbors(x, y, z, w, hypercube)
+                    # print(f"{hypercube[z][y][x]} x={x} y={y} z={z} c={c}")
+                    if hypercube[w][z][y][x] == '#':
+                        if c not in [2, 3]:
+                            new_hypercube[w][z][y][x] = "."
+                    else:
+                        if c == 3:
+                            new_hypercube[w][z][y][x] = "#"
 
     cycle += 1
 
     print(f"After {cycle} cycles")
-    display_cube(new_cube)
+    display_hypercube(new_hypercube)
 
-    active_count = count_active_units(new_cube)
+    active_count = count_active_units(new_hypercube)
     print(f"active_count={active_count}")
 
-    cube = new_cube
+    hypercube = new_hypercube
