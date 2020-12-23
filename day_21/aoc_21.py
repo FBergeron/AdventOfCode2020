@@ -59,3 +59,10 @@ for food in foods:
             appearances += 1
 print(f"appearances={appearances}")
 
+dangerous_ingredient_list = ''
+delimiter = ''
+print(f"keys={sorted(allergen_ingredient_assoc.keys())}")
+for key in sorted(allergen_ingredient_assoc.keys()):
+    dangerous_ingredient_list += delimiter + allergen_ingredient_assoc[key]
+    delimiter = ','
+print(f"dangerous_ingredient_list={dangerous_ingredient_list}")
